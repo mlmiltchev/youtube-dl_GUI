@@ -34,7 +34,7 @@ class GUI:
         config.read(self.originalCwd + "\config.ini")
 
         # Setting up the window
-        master.title("Misho's YouTube Downloader")
+        master.title("MTTF's YouTube Downloader")
         master.geometry("325x180")
         master.resizable(width=False, height=False)
         if os.path.isfile("moon.ico"):
