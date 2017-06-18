@@ -14,5 +14,4 @@ TODO
 -support linux maybe?
 
 
-
 command to build program into exe: `pyinstaller --onefile --icon=moon.ico --windowed ytdgui.py`
