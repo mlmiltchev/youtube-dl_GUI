@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.filedialog
 import youtube_dl
 import threading
+import time
 
 # Separate StatusBar class for code clarity
 class StatusBar(tk.Frame):
@@ -45,7 +46,7 @@ class GUI:
         self.optionAudio = tk.BooleanVar(master, config["Options"]["audioonly"])
         self.defaultPath = tk.StringVar(master, config["Options"]["path"])
 
-        self.ytdlOptions = {"quiet": True}
+        self.ytdlOptions = {"quiet": False}
 
         # Main Frame
         self.mainFrame = tk.Frame(master)
@@ -95,10 +96,15 @@ class GUI:
 
     # Only to be called from downloadPress()
     def downloadAction(self):
+        # Updates status bar -> updates config file -> updates ytdlOptions -> downloads video/audio -> update status bar
+        self.statusBar.set("Downloading...")
         self.updateAllConfigFile()
         self.updateOptionDictionary()
         with youtube_dl.YoutubeDL(self.ytdlOptions) as ytdler:
             ytdler.download([self.linkEntry.get()])
+        self.statusBar.set("Done!")
+        time.sleep(10)
+        self.statusBar.set("Waiting...")
 
     # Switch modes
     def basicPress(self):
@@ -113,7 +119,7 @@ class GUI:
 
         # Audio Only Option
         if self.optionAudio.get():  # If 'Audio Only' is Checked
-            self.ytdlOptions["format"] = "bestaudio/best"
+            self.ytdlOptions["format"] = "bestaudio[ext=m4a]/best"
             self.ytdlOptions["postprocessors"] = [{"key": "FFmpegExtractAudio",
                                                   "preferredcodec": "mp3",
                                                   "preferredquality": "192"}]

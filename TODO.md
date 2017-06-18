@@ -3,7 +3,7 @@ TODO
 -add more options
 -make the program startup faster
 -make black boxes go away
--make the status bar do something
+-~~make the status bar do something~~
 -make icon better
 -support linux maybe?
 
