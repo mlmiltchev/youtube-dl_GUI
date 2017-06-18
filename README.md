@@ -1,4 +1,4 @@
-# MTTP's YouTube Downloader
+# MTTF's YouTube Downloader
 A graphical user interface for the command-line utility, youtube-dl.
 
 ## How to use
