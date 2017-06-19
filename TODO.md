@@ -1,17 +1,17 @@
 #TODO
 
 
--~~replace basic button with menu bar that has the 3 different modes and an about section~~
-
--add more options
-
--make the program startup faster
-
--make black boxes go away
-
 -~~make the status bar do something~~
 
--make icon better
+-~~replace basic button with menu bar that has the 3 different modes and an about section~~
+
+-create an average and advanced layout
+
+-create an about page
+
+-improve startup speed
+
+-get a better icon
 
 -support linux maybe?
 
