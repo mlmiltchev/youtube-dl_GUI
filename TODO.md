@@ -1,5 +1,7 @@
-TODO
--replace basic button with menu bar that has the 3 different modes and an about section
+#TODO
+
+
+-~~replace basic button with menu bar that has the 3 different modes and an about section~~
 
 -add more options
 

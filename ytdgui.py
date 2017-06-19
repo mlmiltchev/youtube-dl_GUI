@@ -34,24 +34,33 @@ class GUI:
         config = configparser.RawConfigParser()
         config.read(self.originalCwd + "\config.ini")
 
-        # Setting up the window
-        master.title("MTTF's YouTube Downloader")
-        master.geometry("325x180")
-        master.resizable(width=False, height=False)
-        if os.path.isfile("moon.ico"):
-            master.iconbitmap(default="moon.ico")
-
-
         # Variables
         self.optionAudio = tk.BooleanVar(master, config["Options"]["audioonly"])
         self.defaultPath = tk.StringVar(master, config["Options"]["path"])
 
-        self.ytdlOptions = {"quiet": False}
+        self.ytdlOptions = {"quiet": True}
+
+        # Setting up the window
+        master.title("MTTF's YouTube Downloader")
+        master.geometry("325x150")
+        master.resizable(width=False, height=False)
+        if os.path.isfile("moon.ico"):
+            master.iconbitmap(default="moon.ico")
+
+        # Menu Bar
+        menuBar = tk.Menu(master, bg="grey")
+        menuBar.add_command(label="Basic", command=self.basicPress)
+        menuBar.add_command(label="Average", command=self.basicPress)
+        menuBar.add_command(label="Advanced", command=self.basicPress)
+        menuBar.add_command(label="About", command=master.quit)
+        master.config(menu=menuBar)
 
         # Main Frame
         self.mainFrame = tk.Frame(master)
         self.mainFrame.grid_columnconfigure(1, weight=1)
         self.mainFrame.pack(fill="both", expand=True)
+
+
 
         # Entries
         self.linkEntryLabel = tk.Label(self.mainFrame, text="YouTube URL")
@@ -72,11 +81,7 @@ class GUI:
 
         # Download Button
         self.downloadButton = tk.Button(self.mainFrame, text="Download", command=self.downloadPress)
-        self.downloadButton.grid(row=5, column=0, padx=5, pady=(5, 0), sticky="w")
-
-        # Toggle Mode (Basic, Regular , Advanced)
-        self.modeButton = tk.Button(self.mainFrame, text="Basic", command=self.basicPress)
-        self.modeButton.grid(row=5, column=2, padx=5, pady=(5, 0), sticky="e")
+        self.downloadButton.grid(row=4, column=2, padx=5, pady=(5, 0), sticky="e")
 
         # Status Bar
         self.statusBar = StatusBar(master)
