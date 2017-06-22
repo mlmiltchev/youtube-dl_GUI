@@ -7,7 +7,7 @@
 
 -create an average and advanced layout
 
--create an about page
+-~~create an about page~~
 
 -improve startup speed
 

@@ -5,6 +5,7 @@ import tkinter.filedialog
 import youtube_dl
 import threading
 import time
+import webbrowser
 
 # Separate StatusBar class for code clarity
 class StatusBar(tk.Frame):
@@ -20,7 +21,6 @@ class StatusBar(tk.Frame):
     def clear(self):
         self.label.config(text="")
         self.label.update_idletasks()
-
 
 # Main GUI class
 class GUI:
@@ -41,9 +41,24 @@ class GUI:
         self.ytdlOptions = {"quiet": True}
 
         # Setting up the window
+        # Title
         master.title("MTTF's YouTube Downloader")
-        master.geometry("325x150")
+
+        # Size, Resizeable, and Centered
+        self.width = 325
+        self.height = 150
+
+        self.screenWidth = master.winfo_screenwidth()
+        self.screenHeight = master.winfo_screenheight()
+
+        self.x = (self.screenWidth / 2) - (self.width / 2)
+        self.y = (self.screenHeight / 2) - (self.height / 2)
+
+        master.geometry('%dx%d+%d+%d' % (self.width, self.height, self.x, self.y))
+
         master.resizable(width=False, height=False)
+
+        # Icon
         if os.path.isfile("moon.ico"):
             master.iconbitmap(default="moon.ico")
 
@@ -52,15 +67,13 @@ class GUI:
         menuBar.add_command(label="Basic", command=self.basicPress)
         menuBar.add_command(label="Average", command=self.basicPress)
         menuBar.add_command(label="Advanced", command=self.basicPress)
-        menuBar.add_command(label="About", command=master.quit)
+        menuBar.add_command(label="About", command=self.aboutPress)
         master.config(menu=menuBar)
 
         # Main Frame
         self.mainFrame = tk.Frame(master)
         self.mainFrame.grid_columnconfigure(1, weight=1)
         self.mainFrame.pack(fill="both", expand=True)
-
-
 
         # Entries
         self.linkEntryLabel = tk.Label(self.mainFrame, text="YouTube URL")
@@ -114,6 +127,15 @@ class GUI:
     # Switch modes
     def basicPress(self):
         pass
+
+    def averagePress(self):
+        pass
+
+    def advancedPress(self):
+        pass
+
+    def aboutPress(self):
+        webbrowser.open(r"https://github.com/meantimetofailure/youtube-dl_GUI")
 
     # Updates ytdlOptions.
     def updateOptionDictionary(self):
