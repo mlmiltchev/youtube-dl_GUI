@@ -26,6 +26,7 @@ class StatusBar(tk.Frame):
 class GUI:
     # Constructor
     def __init__(self, master):
+        self.master = master
         # Create config.ini if it doesn't exist
         self.createDefaultConfig()
 
@@ -36,26 +37,18 @@ class GUI:
 
         # Variables
         self.optionAudio = tk.BooleanVar(master, config["Options"]["audioonly"])
+        self.optionSubtitle = tk.BooleanVar(master, config["Options"]["embedsubs"])
+        self.optionBypass = tk.BooleanVar(master, config["Options"]["bypassgeo"])
+        self.defaultOutput = tk.StringVar(master, config["Options"]["nameformat"])
         self.defaultPath = tk.StringVar(master, config["Options"]["path"])
 
-        self.ytdlOptions = {"quiet": True}
+        self.ytdlOptions = {"quiet": False}
 
         # Setting up the window
         # Title
         master.title("MTTF's YouTube Downloader")
 
-        # Size, Resizeable, and Centered
-        self.width = 325
-        self.height = 150
-
-        self.screenWidth = master.winfo_screenwidth()
-        self.screenHeight = master.winfo_screenheight()
-
-        self.x = (self.screenWidth / 2) - (self.width / 2)
-        self.y = (self.screenHeight / 2) - (self.height / 2)
-
-        master.geometry('%dx%d+%d+%d' % (self.width, self.height, self.x, self.y))
-
+        # Disable resizing
         master.resizable(width=False, height=False)
 
         # Icon
@@ -65,8 +58,7 @@ class GUI:
         # Menu Bar
         menuBar = tk.Menu(master, bg="grey")
         menuBar.add_command(label="Basic", command=self.basicPress)
-        menuBar.add_command(label="Average", command=self.basicPress)
-        menuBar.add_command(label="Advanced", command=self.basicPress)
+        menuBar.add_command(label="Advanced", command=self.advancedPress)
         menuBar.add_command(label="About", command=self.aboutPress)
         master.config(menu=menuBar)
 
@@ -75,31 +67,80 @@ class GUI:
         self.mainFrame.grid_columnconfigure(1, weight=1)
         self.mainFrame.pack(fill="both", expand=True)
 
-        # Entries
-        self.linkEntryLabel = tk.Label(self.mainFrame, text="YouTube URL")
-        self.linkEntry = tk.Entry(self.mainFrame)
-        self.saveEntryLabel = tk.Label(self.mainFrame, text="Save Location")
-        self.saveEntry = tk.Entry(self.mainFrame, textvariable=self.defaultPath)
-        self.chooseCwdButton = tk.Button(self.mainFrame, text="Browse...", command=self.browsePress)
-
-        self.linkEntryLabel.grid(row=0, column=0, padx=5, pady=(5, 0), sticky="w")
-        self.linkEntry.grid(row=1, column=0, columnspan=3, padx=5, pady=0, sticky="we")
-        self.saveEntryLabel.grid(row=2, column=0, padx=5, pady=(5, 0), sticky="w")
-        self.saveEntry.grid(row=3, column=0, columnspan=2, padx=5, pady=0, sticky="we")
-        self.chooseCwdButton.grid(row=3, column=2, padx=5, pady=0, sticky="we")
-
-        # Options
-        self.audioCheck = tk.Checkbutton(self.mainFrame, text="Audio Only", variable=self.optionAudio)
-        self.audioCheck.grid(row=4, column=0, padx=5, pady=(5, 0), sticky="w")
-
-        # Download Button
-        self.downloadButton = tk.Button(self.mainFrame, text="Download", command=self.downloadPress)
-        self.downloadButton.grid(row=4, column=2, padx=5, pady=(5, 0), sticky="e")
+        # Layout
+        self.basicPress()
 
         # Status Bar
         self.statusBar = StatusBar(master)
         self.statusBar.set("Waiting...")
         self.statusBar.pack(side="bottom", fill="x")
+
+    # Switch mode menu buttons
+    def basicPress(self):
+        self.mainFrame.destroy()
+
+        # Set Window Size
+        self.master.geometry("325x150")
+
+        # Main Frame
+        self.mainFrame = tk.Frame(self.master)
+        self.mainFrame.grid_columnconfigure(1, weight=1)
+        self.mainFrame.pack(fill="both", expand=True)
+
+        # Entries
+        linkEntryLabel = tk.Label(self.mainFrame, text="YouTube URL")
+        self.linkEntry = tk.Entry(self.mainFrame)
+        saveEntryLabel = tk.Label(self.mainFrame, text="Save Location")
+        saveEntry = tk.Entry(self.mainFrame, textvariable=self.defaultPath)
+
+        linkEntryLabel.grid(row=0, column=0, padx=5, pady=(5, 0), sticky="w")
+        self.linkEntry.grid(row=1, column=0, columnspan=3, padx=5, pady=0, sticky="we")
+        saveEntryLabel.grid(row=2, column=0, padx=5, pady=(5, 0), sticky="w")
+        saveEntry.grid(row=3, column=0, columnspan=2, padx=5, pady=0, sticky="we")
+
+        # Buttons
+        chooseCwdButton = tk.Button(self.mainFrame, text="Browse...", command=self.browsePress)
+        downloadButton = tk.Button(self.mainFrame, text="Download", command=self.downloadPress)
+
+        chooseCwdButton.grid(row=3, column=2, padx=5, pady=0, sticky="we")
+        downloadButton.grid(row=10, column=2, padx=5, pady=(5, 0), sticky="e")
+
+        # Options
+        audioCheck = tk.Checkbutton(self.mainFrame, text="Audio Only", variable=self.optionAudio)
+        audioCheck.grid(row=10, column=0, padx=5, pady=(5, 0), sticky="w")
+
+    def advancedPress(self):
+        # Set window size
+        self.master.geometry("325x710")
+
+        # Entires
+        outputLabel = tk.Label(self.mainFrame, text="Output Template")
+        outputEntry = tk.Entry(self.mainFrame, textvariable=self.defaultOutput)
+        usernameLabel = tk.Label(self.mainFrame, text="Username/Email")
+        usernameEntry = tk.Entry(self.mainFrame)
+        passwordLabel = tk.Label(self.mainFrame, text="Password")
+        passwordEntry = tk.Entry(self.mainFrame)
+
+        outputLabel.grid(row=4, column=0, padx=5, pady=(5, 0), sticky="w")
+        outputEntry.grid(row=5, column=0, columnspan=3, padx=5, pady=0, sticky="we")
+        usernameLabel.grid(row=6, column=0, padx=5, pady=(5, 0), sticky="w")
+        usernameEntry.grid(row=7, column=0, columnspan=3, padx=5, pady=0, sticky="we")
+        passwordLabel.grid(row=8, column=0, padx=5, pady=(5, 0), sticky="w")
+        passwordEntry.grid(row=9, column=0, columnspan=3, padx=5, pady=0, sticky="we")
+
+        # Options
+        subtitleCheck = tk.Checkbutton(self.mainFrame, text="Embed Subtitles", variable=self.optionSubtitle)
+        subtitleCheck.grid(row=10, column=1, padx=5, pady=(5, 0), sticky="w")
+        bypassCheck = tk.Checkbutton(self.mainFrame, text="Bypass Geo Restriction (experimental)", variable=self.optionBypass)
+        bypassCheck.grid(row=11, column=0, columnspan=3, padx=5, pady=(5, 0), sticky="w")
+
+        # Console output text widget
+        consoleOutput = tk.Text(self.mainFrame, bg="grey15", fg="grey90", state="disabled")
+        consoleOutput.grid(row=12, column=0, columnspan=3, padx=5, pady=5)
+
+    # About menu button
+    def aboutPress(self):
+        webbrowser.open(r"https://github.com/meantimetofailure/youtube-dl_GUI")
 
     # Browse button function. Choose directory.
     def browsePress(self):
@@ -124,25 +165,12 @@ class GUI:
         time.sleep(10)
         self.statusBar.set("Waiting...")
 
-    # Switch modes
-    def basicPress(self):
-        pass
-
-    def averagePress(self):
-        pass
-
-    def advancedPress(self):
-        pass
-
-    def aboutPress(self):
-        webbrowser.open(r"https://github.com/meantimetofailure/youtube-dl_GUI")
-
     # Updates ytdlOptions.
     def updateOptionDictionary(self):
         config = configparser.RawConfigParser()
         config.read(self.originalCwd + "\config.ini")
         # path and filename option
-        self.ytdlOptions["outtmpl"] = config["Options"]["path"] + config["Options"]["nameformat"]
+        self.ytdlOptions["outtmpl"] = config["Options"]["path"] + "\\" + config["Options"]["nameformat"]
 
         # Audio Only Option
         if self.optionAudio.get():  # If 'Audio Only' is Checked
@@ -164,6 +192,8 @@ class GUI:
             config["Options"] = {"path": os.getcwd(),
                                  "nameformat": "\%(title)s.%(ext)s",
                                  "audioonly": False,
+                                 "embedsubs": False,
+                                 "bypassgeo": False
                                  }
 
             with open("config.ini", "w") as configfile:
@@ -173,6 +203,8 @@ class GUI:
     def updateAllConfigFile(self):
         self.updateConfigFile("Options", "path", self.defaultPath.get())
         self.updateConfigFile("Options", "audioonly", str(self.optionAudio.get()))
+        self.updateConfigFile("Options", "embedsubs", str(self.optionSubtitle.get()))
+        self.updateConfigFile("Options", "bypassgeo", str(self.optionBypass.get()))
 
     # Update one setting in config.ini
     # Only used in updateConfigFile()
