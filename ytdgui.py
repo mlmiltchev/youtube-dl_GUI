@@ -37,7 +37,7 @@ class GUI:
 
         # Variables
         self.optionAudio = tk.BooleanVar(master, config["Options"]["audioonly"])
-        self.optionSubtitle = tk.BooleanVar(master, config["Options"]["embedsubs"])
+        self.optionHTTP = tk.BooleanVar(master, config["Options"]["usehttp"])
         self.optionBypass = tk.BooleanVar(master, config["Options"]["bypassgeo"])
         self.defaultOutput = tk.StringVar(master, config["Options"]["nameformat"])
         self.defaultPath = tk.StringVar(master, config["Options"]["path"])
@@ -75,7 +75,7 @@ class GUI:
         self.statusBar.set("Waiting...")
         self.statusBar.pack(side="bottom", fill="x")
 
-    # Switch mode menu buttons
+    # Basic menu button
     def basicPress(self):
         self.mainFrame.destroy()
 
@@ -109,6 +109,7 @@ class GUI:
         audioCheck = tk.Checkbutton(self.mainFrame, text="Audio Only", variable=self.optionAudio)
         audioCheck.grid(row=10, column=0, padx=5, pady=(5, 0), sticky="w")
 
+    # Advanced menu button
     def advancedPress(self):
         # Set window size
         self.master.geometry("325x710")
@@ -129,8 +130,8 @@ class GUI:
         passwordEntry.grid(row=9, column=0, columnspan=3, padx=5, pady=0, sticky="we")
 
         # Options
-        subtitleCheck = tk.Checkbutton(self.mainFrame, text="Embed Subtitles", variable=self.optionSubtitle)
-        subtitleCheck.grid(row=10, column=1, padx=5, pady=(5, 0), sticky="w")
+        playlistCheck = tk.Checkbutton(self.mainFrame, text="Use HTTP", variable=self.optionHTTP)
+        playlistCheck.grid(row=10, column=1, padx=5, pady=(5, 0), sticky="w")
         bypassCheck = tk.Checkbutton(self.mainFrame, text="Bypass Geo Restriction (experimental)", variable=self.optionBypass)
         bypassCheck.grid(row=11, column=0, columnspan=3, padx=5, pady=(5, 0), sticky="w")
 
@@ -140,15 +141,16 @@ class GUI:
 
     # About menu button
     def aboutPress(self):
-        webbrowser.open(r"https://github.com/meantimetofailure/youtube-dl_GUI")
+        print(self.ytdlOptions)
+        # webbrowser.open(r"https://github.com/meantimetofailure/youtube-dl_GUI")
 
-    # Browse button function. Choose directory.
+    # Browse button functionality. Choose directory.
     def browsePress(self):
         path = tk.filedialog.askdirectory()
         if path != "":
             self.defaultPath.set(path)
 
-    # Download button function. Download video with options.
+    # Download button functionality. Download video with options.
     def downloadPress(self):
         t = threading.Thread(target=self.downloadAction)
         t.start()
@@ -156,14 +158,26 @@ class GUI:
     # Only to be called from downloadPress()
     def downloadAction(self):
         # Updates status bar -> updates config file -> updates ytdlOptions -> downloads video/audio -> update status bar
-        self.statusBar.set("Downloading...")
+        self.statusBar.set("Updating config.ini...")
         self.updateAllConfigFile()
         self.updateOptionDictionary()
+        self.statusBar.set("Downloading...")
         with youtube_dl.YoutubeDL(self.ytdlOptions) as ytdler:
-            ytdler.download([self.linkEntry.get()])
-        self.statusBar.set("Done!")
+            try:
+                ytdler.download([self.linkEntry.get()])
+                self.statusBar.set("Done!")
+            except youtube_dl.utils.YoutubeDLError:
+                self.statusBar.set("Something went wrong! Download failed!")
         time.sleep(10)
         self.statusBar.set("Waiting...")
+
+    # Update all settings in config.ini
+    def updateAllConfigFile(self):
+        self.updateConfigFile("Options", "path", self.defaultPath.get())
+        self.updateConfigFile("Options", "nameformat", self.defaultOutput.get())
+        self.updateConfigFile("Options", "audioonly", str(self.optionAudio.get()))
+        self.updateConfigFile("Options", "usehttp", str(self.optionHTTP.get()))
+        self.updateConfigFile("Options", "bypassgeo", str(self.optionBypass.get()))
 
     # Updates ytdlOptions.
     def updateOptionDictionary(self):
@@ -172,16 +186,26 @@ class GUI:
         # path and filename option
         self.ytdlOptions["outtmpl"] = config["Options"]["path"] + "\\" + config["Options"]["nameformat"]
 
-        # Audio Only Option
+        # Audio Only
         if self.optionAudio.get():  # If 'Audio Only' is Checked
             self.ytdlOptions["format"] = "bestaudio[ext=m4a]/best"
             self.ytdlOptions["postprocessors"] = [{"key": "FFmpegExtractAudio",
                                                   "preferredcodec": "mp3",
                                                   "preferredquality": "192"}]
-        else:
-            self.ytdlOptions["format"] = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best"
+        else:  # If 'Audio Only' is Unchecked
             if "postprocessors" in self.ytdlOptions.keys():
                 del self.ytdlOptions["postprocessors"]
+            self.ytdlOptions["format"] = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best"
+
+        # Use HTTP
+        self.ytdlOptions["prefer_insecure"] = self.optionHTTP.get()
+
+        # Bypass Geo Restiction (experimental)
+        self.ytdlOptions["geo_bypass"] = self.optionBypass.get()
+
+    ##
+    #username, password
+    ##
 
     # Create default config file if it doesn't exist
     def createDefaultConfig(self):
@@ -190,21 +214,14 @@ class GUI:
         else:
             config = configparser.RawConfigParser()
             config["Options"] = {"path": os.getcwd(),
-                                 "nameformat": "\%(title)s.%(ext)s",
+                                 "nameformat": "%(title)s.%(ext)s",
                                  "audioonly": False,
-                                 "embedsubs": False,
+                                 "usehttp": False,
                                  "bypassgeo": False
                                  }
 
             with open("config.ini", "w") as configfile:
                 config.write(configfile)
-
-    # Update all settings in config.ini
-    def updateAllConfigFile(self):
-        self.updateConfigFile("Options", "path", self.defaultPath.get())
-        self.updateConfigFile("Options", "audioonly", str(self.optionAudio.get()))
-        self.updateConfigFile("Options", "embedsubs", str(self.optionSubtitle.get()))
-        self.updateConfigFile("Options", "bypassgeo", str(self.optionBypass.get()))
 
     # Update one setting in config.ini
     # Only used in updateConfigFile()
