@@ -39,8 +39,12 @@ class GUI:
         self.optionAudio = tk.BooleanVar(master, config["Options"]["audioonly"])
         self.optionHTTP = tk.BooleanVar(master, config["Options"]["usehttp"])
         self.optionBypass = tk.BooleanVar(master, config["Options"]["bypassgeo"])
+
         self.defaultOutput = tk.StringVar(master, config["Options"]["nameformat"])
         self.defaultPath = tk.StringVar(master, config["Options"]["path"])
+
+        self.defaultUsername = tk.StringVar(master, config["Options"]["username"])
+        self.defaultPassword = tk.StringVar(master, config["Options"]["password"])
 
         self.ytdlOptions = {"quiet": False}
 
@@ -118,9 +122,9 @@ class GUI:
         outputLabel = tk.Label(self.mainFrame, text="Output Template")
         outputEntry = tk.Entry(self.mainFrame, textvariable=self.defaultOutput)
         usernameLabel = tk.Label(self.mainFrame, text="Username/Email")
-        usernameEntry = tk.Entry(self.mainFrame)
+        usernameEntry = tk.Entry(self.mainFrame, textvariable=self.defaultUsername)
         passwordLabel = tk.Label(self.mainFrame, text="Password")
-        passwordEntry = tk.Entry(self.mainFrame)
+        passwordEntry = tk.Entry(self.mainFrame, textvariable=self.defaultPassword, show="*")
 
         outputLabel.grid(row=4, column=0, padx=5, pady=(5, 0), sticky="w")
         outputEntry.grid(row=5, column=0, columnspan=3, padx=5, pady=0, sticky="we")
@@ -130,8 +134,8 @@ class GUI:
         passwordEntry.grid(row=9, column=0, columnspan=3, padx=5, pady=0, sticky="we")
 
         # Options
-        playlistCheck = tk.Checkbutton(self.mainFrame, text="Use HTTP", variable=self.optionHTTP)
-        playlistCheck.grid(row=10, column=1, padx=5, pady=(5, 0), sticky="w")
+        httpCheck = tk.Checkbutton(self.mainFrame, text="Use HTTP", variable=self.optionHTTP)
+        httpCheck.grid(row=10, column=1, padx=5, pady=(5, 0), sticky="w")
         bypassCheck = tk.Checkbutton(self.mainFrame, text="Bypass Geo Restriction (experimental)", variable=self.optionBypass)
         bypassCheck.grid(row=11, column=0, columnspan=3, padx=5, pady=(5, 0), sticky="w")
 
@@ -141,8 +145,7 @@ class GUI:
 
     # About menu button
     def aboutPress(self):
-        print(self.ytdlOptions)
-        # webbrowser.open(r"https://github.com/meantimetofailure/youtube-dl_GUI")
+        webbrowser.open(r"https://github.com/meantimetofailure/youtube-dl_GUI")
 
     # Browse button functionality. Choose directory.
     def browsePress(self):
@@ -178,6 +181,7 @@ class GUI:
         self.updateConfigFile("Options", "audioonly", str(self.optionAudio.get()))
         self.updateConfigFile("Options", "usehttp", str(self.optionHTTP.get()))
         self.updateConfigFile("Options", "bypassgeo", str(self.optionBypass.get()))
+        self.updateConfigFile("Options", "username", str(self.defaultUsername.get()))
 
     # Updates ytdlOptions.
     def updateOptionDictionary(self):
@@ -203,9 +207,11 @@ class GUI:
         # Bypass Geo Restiction (experimental)
         self.ytdlOptions["geo_bypass"] = self.optionBypass.get()
 
-    ##
-    #username, password
-    ##
+        # Username + Password
+        if not self.defaultUsername.get() == "":  # If a username is present
+            if not self.defaultPassword.get() == "":  # If a password is present
+                self.ytdlOptions["username"] = self.defaultUsername.get()
+                self.ytdlOptions["password"] = self.defaultPassword.get()
 
     # Create default config file if it doesn't exist
     def createDefaultConfig(self):
@@ -217,7 +223,9 @@ class GUI:
                                  "nameformat": "%(title)s.%(ext)s",
                                  "audioonly": False,
                                  "usehttp": False,
-                                 "bypassgeo": False
+                                 "bypassgeo": False,
+                                 "username": "",
+                                 "password": ""
                                  }
 
             with open("config.ini", "w") as configfile:
