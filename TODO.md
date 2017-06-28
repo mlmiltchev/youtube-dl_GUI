@@ -9,9 +9,9 @@
 
 -~~create an about page~~
 
--add functionality to the new Advanced layout (currently does nothing)
+-~~add functionality to the new Advanced layout (currently does nothing)~~
 
--improve startup speed
+-~~improve startup speed~~
 
 -get a better icon
 
