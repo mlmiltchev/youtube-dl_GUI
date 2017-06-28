@@ -116,7 +116,7 @@ class GUI:
     # Advanced menu button
     def advancedPress(self):
         # Set window size
-        self.master.geometry("325x710")
+        self.master.geometry("325x310")
 
         # Entires
         outputLabel = tk.Label(self.mainFrame, text="Output Template")
@@ -138,10 +138,6 @@ class GUI:
         httpCheck.grid(row=10, column=1, padx=5, pady=(5, 0), sticky="w")
         bypassCheck = tk.Checkbutton(self.mainFrame, text="Bypass Geo Restriction (experimental)", variable=self.optionBypass)
         bypassCheck.grid(row=11, column=0, columnspan=3, padx=5, pady=(5, 0), sticky="w")
-
-        # Console output text widget
-        consoleOutput = tk.Text(self.mainFrame, bg="grey15", fg="grey90", state="disabled")
-        consoleOutput.grid(row=12, column=0, columnspan=3, padx=5, pady=5)
 
     # About menu button
     def aboutPress(self):
