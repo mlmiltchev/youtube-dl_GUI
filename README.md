@@ -1,11 +1,11 @@
 # Python YouTube Downloader
-A graphical user interface for the command-line utility, youtube-dl.
+A first attempt as a graphical user interface for the command-line utility, youtube-dl.
 
 ## Screenshots
 
-![Basic Tab](http://i.imgur.com/QxEVoRt.png)
+![Basic Tab](https://i.imgur.com/KEILslW.png)
 
-![Advanced Tab](http://i.imgur.com/WBWdFpi.png)
+![Advanced Tab](https://i.imgur.com/GSXzAVn.png)
 
 ## Installation/Requirements
 
