@@ -1,4 +1,4 @@
-# MTTF's YouTube Downloader
+# Python YouTube Downloader
 A graphical user interface for the command-line utility, youtube-dl.
 
 ## Screenshots

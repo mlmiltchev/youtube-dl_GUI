@@ -50,7 +50,7 @@ class GUI:
 
         # Setting up the window
         # Title
-        master.title("MTTF's YouTube Downloader")
+        master.title("Python YouTube Downloader")
 
         # Disable resizing
         master.resizable(width=False, height=False)
